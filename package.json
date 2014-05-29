@@ -6,6 +6,7 @@
     "author": "OHM-COE",
     "dependencies": {
         "express": "3.x",
-        "mongoose": "latest"
+        "mongoose": "latest",
+        "socket.io": "latest"
     }
 }

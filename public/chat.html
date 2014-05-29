@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html ng-app="ChatApp">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+         <script src="http://code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body ng-controller="MessagesController">
+        <div class="container">
+            <h1>Chat Simple App</h1> 
+            <div class="well" style="width: 100%; min-height: 200px">
+                <table id="chatMessage" name="chatMessage" class="table">
+                </table>
+            </div>
+            <br>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" ng-model="message" autofocus>
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-success btn-sm" ng-click="send()">Send</button>
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-danger btn-sm" ng-click="clearLog()">Clear</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script>
+        
+        var app = angular.module("ChatApp", ['ngCookies']);
+
+        app.controller("MessagesController", function($scope, $http, $cookies) {
+            $scope.message = "";
+
+            $scope.send = function() {
+                if ($scope.message == "")
+                    return;
+                var tmp = new Date();
+                var socket = io();
+                var data = {
+                    message: $scope.message,
+                    name: $cookies.name,
+                    time: tmp.toString() 
+                }; 
+                socket.emit("messages", data);
+                $scope.message = "";
+            };
+
+            $scope.clearLog = function() {
+                document.getElementById('chatMessage').innerHTML = "";
+                $scope.messages = [];
+            };
+            
+            $scope.messages = [];
+
+            var socket = io();
+            socket.on('messages', function(messages) {
+                $scope.messages.push(messages);
+                var html = "";
+
+                for (var i = 0 ; i < $scope.messages.length ; i++)
+                {
+                    html += '<tr>';
+                    html += '<td width="10%">' + $scope.messages[i].name + '</td>';
+                    html += '<td width="50%">' + $scope.messages[i].message + '</td>';
+                    html += '<td width="40%">' + $scope.messages[i].time + '</td>';
+                    html += '</tr>';
+                }
+          
+                document.getElementById('chatMessage').innerHTML = html;
+            });
+        });
+        </script>
+    </body>
+</html>

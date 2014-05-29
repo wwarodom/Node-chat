@@ -1,75 +1,23 @@
 <!DOCTYPE html>
 
-<html ng-app="ChatApp">
+<html>
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="http://getbootstrap.com/examples/signin/signin.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
     </head>
     <body>
         <div class="container">
-            <h1>Chat Simple App</h1> 
-            <div class="well" style="width: 100%; height: 200px" ng-controller="ShowMessagesController">
-                <table>
-                    <tr ng-repeat="message in messages">
-                        <td width="25%">{{message.message}}</td>
-                    </tr>
-                </table>
-            </div>
-            <br>
-            <br>
-            <form class="form-horizontal" ng-controller="SendController">
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        <input class="form-control" type="text" ng-model="name">
-                    </div>
-                    <div class="col-sm-9">
-                        <input class="form-control" type="text" ng-model="message">
-                    </div>
-                    <div class="col-sm-1">
-                        <button class="btn btn-success btn-sm" ng-click="send()">Send</button>
-                    </div>
-                </div>
+            <form class="form-signin" method="post" action="/api/setname">
+                <h2 class="form-sigin-heading">Entet Name</h2>
+                <input type="text" class="form-control" name="name" id="name" placeholder="Name" required autofocus>
+                <br>
+                <button type="submit" class="btn btn-lg btn-primary">Signin</button>
             </form>
         </div>
-        <script>
-        
-        var app = angular.module("ChatApp", []);
-
-        app.controller("SendController", function($scope, $http) {
-            $scope.message = "";
-            $scope.name = "";
-
-            $scope.send = function() {
-                var http = $http({
-                    method: "post",
-                    url: "/api/send",
-                    data: {
-                        message: $scope.message,
-                        name: $scope.name
-                    }
-                });
-                http.success(function(err, data) {
-                    $scope.message = "";
-                    $scope.name = "";
-                });
-            };
-        });
-
-        app.controller('ShowMessagesController', function($scope, $http, $timeout) {
-            $scope.messages = [];
-            (function tick() {
-                $http.get('/api/messages')
-                    .success(function(messages) {
-                        $scope.messages = messages;
-                    });
-                $timeout(tick, 5000);
-            })();
-        });
-
-        </script>
     </body>
 </html>

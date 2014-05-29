@@ -1,29 +1,20 @@
 'use strict'
 
-var Chat = require('./models/chat');
+module.exports = function(app, io) {
 
-module.exports = function(app) {
-    app.get('/api/messages', function(req, res) {
-        Chat.find()
-            .sort('field +date')
-            .exec(function(err, messages) {
-                res.json(messages);
-            });
-    });
-
-    app.post('/api/send', function(req, res) {
-        var data = {
-            name: req.body.name,
-            message: req.body.message,
-            date: new Date()
-        };
-        Chat.create(data);
-
-        return res.send('finished');
+    //ajax call
+    app.post('/api/setname', function(req, res) {
+        var minute = 180*60*1000;
+        res.cookie('name', req.body.name, {maxAge: minute});
+        res.redirect('/chat');
     });
 
     //use angular for view
-    app.get('*', function(req, res) {
+    app.get('/', function(req, res) {
         res.sendfile('./public/index.html');
+    });
+
+    app.get('*', function(req, res) {
+        res.sendfile('./public/chat.html');
     });
 };
